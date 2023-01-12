@@ -1,70 +1,33 @@
-import { useEffect, useState, useMemo } from "react";
-import axios from "axios";
-import ScheduleTable from "./components/ScheduleTable";
+// import { useEffect, useState, useMemo } from "react";
+// import axios from "axios";
+// import ScheduleTable from "./components/ScheduleTable";
+import Timetable from 'react-timetable-events'
 
 function App() {
-    // data state to store the TV Maze API data. Its initial value is an empty array
-    // eslint-disable-next-line
-  const [data, setData] = useState([]);
-  const columns = useMemo(
-    () => [
-      {
-        // first group - TV Show
-        Header: "TV Show",
-        // First group columns
-        columns: [
+
+    const events = {
+        monday: [
           {
-            Header: "Name",
-            accessor: "show.name",
-          },
-          {
-            Header: "Type",
-            accessor: "show.type",
+            id: 1,
+            name: "Custom Event 1",
+            type: "custom",
+            startTime: new Date("2018-02-23T11:30:00"),
+            endTime: new Date("2018-02-23T13:30:00"),
           },
         ],
-      },
-      {
-        // Second group - Details
-        Header: "Details",
-        // Second group columns
-        columns: [
-          {
-            Header: "Language",
-            accessor: "show.language",
-          },
-          {
-            Header: "Genre(s)",
-            accessor: "show.genres",
-          },
-          {
-            Header: "Runtime",
-            accessor: "show.runtime",
-          },
-          {
-            Header: "Status",
-            accessor: "show.status",
-          },
-        ],
-      },
-    ],
-    []
-  );
-
-  // Using useEffect to call the API once mounted and set the data
-  useEffect(() => {
-    (async () => {
-      const result = await axios("https://api.tvmaze.com/search/shows?q=snow");
-      setData(result.data);
-    })();
-  }, []);
-
-
+        tuesday: [],
+        wednesday: [],
+        thursday: [],
+        friday: [],
+      };
   return (
-    <div className="App">
-      <h1>Schedule</h1>
-      <ScheduleTable columns={columns} data={data} />
-    </div>
-  );
+   <div className="d-flex w-100 justify-content-center pt-5">
+     <Timetable 
+        style={{height: "500px", width : "75%"}}
+        events={events}
+    />
+   </div>
+  )
 }
 
 export default App;

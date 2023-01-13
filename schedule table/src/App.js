@@ -1,68 +1,106 @@
-import { useEffect, useState, useMemo } from "react";
-import axios from "axios";
-import ScheduleTable from "./components/ScheduleTable";
+import "./main.scss"
+import 'react-data-grid/lib/styles.css';
+import DataGrid from 'react-data-grid';
+import moment from 'moment';
+import { useState, useEffect } from "react";
 
 function App() {
-    // data state to store the TV Maze API data. Its initial value is an empty array
-    // eslint-disable-next-line
-  const [data, setData] = useState([]);
-  const columns = useMemo(
-    () => [
-      {
-        // first group - TV Show
-        Header: "TV Show",
-        // First group columns
-        columns: [
-          {
-            Header: "Name",
-            accessor: "show.name",
-          },
-          {
-            Header: "Type",
-            accessor: "show.type",
-          },
-        ],
-      },
-      {
-        // Second group - Details
-        Header: "Details",
-        // Second group columns
-        columns: [
-          {
-            Header: "Language",
-            accessor: "show.language",
-          },
-          {
-            Header: "Genre(s)",
-            accessor: "show.genres",
-          },
-          {
-            Header: "Runtime",
-            accessor: "show.runtime",
-          },
-          {
-            Header: "Status",
-            accessor: "show.status",
-          },
-        ],
-      },
-    ],
-    []
-  );
+    const [weekStart, setWeekStart] = useState(moment().startOf('isoWeek'))
+    const [weekEnd, setWeekEnd] = useState(moment().endOf('isoWeek'))
+    const [daysOfWeek, setDaysOfWeek] = useState([]);
 
-  // Using useEffect to call the API once mounted and set the data
-  useEffect(() => {
-    (async () => {
-      const result = await axios("https://api.tvmaze.com/search/shows?q=snow");
-      setData(result.data);
-    })();
-  }, []);
+ const getWeekArray = (startOfWeek, endOfWeek)  => {
+    const days = [];
+    let day = startOfWeek;
+    let endDay = endOfWeek;
+    if (typeof startOfWeek === "string") {
+        day = moment(startOfWeek).startOf('isoWeek');
+    }
+    if (typeof endOfWeek === "string") {
+        endDay = moment(endOfWeek).endOf('isoWeek')
+    }
+    while (day <= endDay) {
+        
+        days.push(day.format('YYYY-MM-DD'));
+        day = day.clone().add(1, 'd');
+    }
+    return days;
+ }
 
 
-  return (
-    <div className="App">
-      <h1>Schedule</h1>
-      <ScheduleTable columns={columns} data={data} />
+useEffect(() => {
+    setDaysOfWeek(getWeekArray(weekStart, weekEnd));
+}, [weekStart, weekEnd])
+
+const getColumns = () => {
+    let daysArr = [{key: "name", name: "Name"}]
+    daysOfWeek.forEach((weekDay) => {
+        if (weekDay === moment().format('YYYY-MM-DD')) {
+            daysArr.push({key: moment().day(weekDay).format(),
+                    name: <span className="bg-column">
+                    {moment(weekDay).format('ddd DD/MM')}</span>
+                })
+        } else {
+            daysArr.push({key: weekDay, name:  moment(weekDay).format('ddd DD/MM')});
+        }
+    });
+    return daysArr;
+}
+    const columns = getColumns();
+
+      const rows =  daysOfWeek.map((weekDay, index) => {
+        let rowObject = {};
+        daysOfWeek.forEach((dayOfweek, index) => {
+                if (index % 2) {
+                    rowObject[dayOfweek] = "7:30";
+                } else {
+                    rowObject[dayOfweek] = "";
+                }
+            })
+            if (index % 2) {
+                rowObject["name"] = "Zika"
+            } else {
+                rowObject["name"] = "Pera"
+            }
+            return rowObject;
+      })
+
+
+      const switchWeek = (direction) => {
+        switch(direction) {
+            case "next":
+               setWeekStart( moment(weekStart).add(7, "days").format("YYYY-MM-DD"));
+               setWeekEnd(moment(weekEnd).add(7, "days").format("YYYY-MM-DD"));
+                ;
+                break;
+            case "prev":
+                setWeekStart(moment(weekStart).subtract(7, "days").format("YYYY-MM-DD"));
+                setWeekEnd(moment(weekEnd).subtract(7, "days").format("YYYY-MM-DD"));
+                break;
+            default:
+                break;
+        }
+
+      }
+      return (
+        <div className="w-75 mx-auto mt-5">
+            <div>
+                <div className="d-flex justify-content-between">
+                    <div className="d-flex">
+                        <button className="btn bg-primary text-white mb-2 me-2"
+                        onClick={() => {switchWeek("prev")}}
+                        >
+                            prev
+                        </button>
+                        <button className="btn bg-primary text-white mb-2"
+                        onClick={() => {switchWeek("next")}}
+                        >
+                            next
+                        </button>
+                    </div>
+                </div>
+                {daysOfWeek.length && <DataGrid columns={columns} rows={rows} />}
+            </div>
     </div>
   );
 }

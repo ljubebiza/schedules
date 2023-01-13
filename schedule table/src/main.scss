@@ -1,0 +1,15 @@
+// table {
+//     tr:nth-child(even) {
+//         background-color: #f2f2f2;
+//       }
+//       tr {
+//         td, th{
+//             border: solid gray 1px;
+//         }
+//       }
+// }
+
+.rdg-cell:has(.bg-column ) {
+        background-color: lightgreen;
+        opacity: 0.7;
+}

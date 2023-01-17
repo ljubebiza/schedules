@@ -1,15 +1,93 @@
-// table {
-//     tr:nth-child(even) {
-//         background-color: #f2f2f2;
-//       }
-//       tr {
-//         td, th{
-//             border: solid gray 1px;
-//         }
-//       }
-// }
+table {
+    border-collapse:collapse;
+    border: solid #dee2e6 1px;
+    width: 100%;
 
-.rdg-cell:has(.bg-column ) {
+    tr {
+        display: flex;
+        td, th{
+            border: solid #dee2e6 1px;
+            display: flex;
+            flex: 1 0;
+            min-height: 60px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        th{
+            box-shadow: 0 4px 2px -2px gray;
+        }
+
+        td {
+            padding: 4px 2px;
+            .bg-shift {
+                background-color: #f2f2f2;
+                width: 100%;
+                height: 100%;
+                text-align: center;
+                font-size: 12px;
+                span {
+                    font-weight: bold;
+                }
+            }
+
+           .create-shift-actions {
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                &:hover {
+                    .hide-actions {
+                        display: block;
+                    }
+                }
+                .hide-actions{
+                    display: none;
+                    .create-icons {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        padding:2px 4px;
+                        border-radius: 3px;
+                        margin: 0 2px;
+                        border: solid 1px #dee2e6;
+                        &:hover {
+                            cursor: pointer;
+                            transform: scale(1.1);
+                        }
+                    }
+                }
+           }
+           .employee-name {
+                font-size: 12px;
+                color: gray;
+           }
+        }
+
+        th{
+            // font-weight: 500;
+            font-size: 16px;
+            padding: 5px;
+        }
+      }
+      .today-cell{
         background-color: lightgreen;
         opacity: 0.7;
+    }
+}
+
+.navigation-holder{
+    button {
+        background-color: #fff;
+        color: #212529;
+        &:hover{
+            background-color: #fff;
+            background: #fff;
+            color: #212529;
+        }
+        &:active {
+            --bs-btn-active-color: #212529;
+             --bs-btn-active-bg: #fff;
+        }
+    }
 }

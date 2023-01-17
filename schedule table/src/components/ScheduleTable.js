@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useTable } from "react-table";
+import moment from 'moment';
 
 function ScheduleTable({ columns, data }) {
  // Use the useTable Hook to send the columns and data to build the table
@@ -26,7 +27,8 @@ function ScheduleTable({ columns, data }) {
         {headerGroups.map(headerGroup => (
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map(column => (
-              <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+              <th className={column.Header === moment().format('ddd DD/MM') ? "today-cell" : ""} 
+               {...column.getHeaderProps()}>{column.render("Header")}</th>
             ))}
           </tr>
         ))}
@@ -36,7 +38,7 @@ function ScheduleTable({ columns, data }) {
           prepareRow(row);
           return (
             <tr {...row.getRowProps()}>
-              {row.cells.map(cell => {
+              {row.cells.map((cell, index) => {
                 return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
               })}
             </tr>

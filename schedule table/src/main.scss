@@ -1,12 +1,14 @@
 table {
     border-collapse:collapse;
-    border: solid #dee2e6 1px;
+    border-right: solid #dee2e6 1px;
+    border-bottom: solid #dee2e6 1px;
     width: 100%;
 
     tr {
         display: flex;
         td, th{
-            border: solid #dee2e6 1px;
+            border-top: solid #dee2e6 1px;
+            border-left: solid #dee2e6 1px;
             display: flex;
             flex: 1 0;
             min-height: 60px;
@@ -87,7 +89,13 @@ table {
         }
         &:active {
             --bs-btn-active-color: #212529;
-             --bs-btn-active-bg: #fff;
+            --bs-btn-active-bg: #fff;
         }
+    }
+}
+
+div.slide-pane {
+    &__content {
+        padding: 0 0;
     }
 }

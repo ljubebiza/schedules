@@ -163,13 +163,13 @@ const handleCellComponents = (shiftData, forDay, employee) => {
                         {columns.length > 1 &&  <ScheduleTable columns={columns} data={data}
                             handleCellComponents={handleCellComponents}/>
                         }
-                        {isCreateShiftSidePaneOpen.isPaneOpen && 
+                        
                         <CreateShiftSidePane
                             choosenShiftDate={choosenShiftDate}
                             employee={employee}
-                            isCreateShiftSidePaneOpen={isCreateShiftSidePaneOpen}
-                            setIsCreateShiftSidePaneOpen={setIsCreateShiftSidePaneOpen}
-                        />}
+                            visible={isCreateShiftSidePaneOpen.isPaneOpen}
+                            closePane={() => {setIsCreateShiftSidePaneOpen({ isPaneOpen: false })}}
+                        />
                 </div>
             </div>
         </div>

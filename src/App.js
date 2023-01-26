@@ -1,6 +1,6 @@
 import "./main.scss"
 import moment from 'moment';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import ScheduleTable from "./components/ScheduleTable";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import Shift from "./components/parts/Shift"
@@ -12,7 +12,6 @@ import CreateShiftSidePane from "./components/parts/CreateShiftSidePane";
 function App() {
     const [weekStart, setWeekStart] = useState(moment().startOf('isoWeek'))
     const [weekEnd, setWeekEnd] = useState(moment().endOf('isoWeek'))
-    const [columns, setColumns] = useState([]);
     const [data, setData] = useState([]);
     const [navigationDay, setNavigationDay] = useState(moment());
     const [isCreateShiftSidePaneOpen, setIsCreateShiftSidePaneOpen] = useState({
@@ -34,14 +33,37 @@ function App() {
     return days;
  }
 
+ const getColumns = (daysOfWeek) => {
+    let daysArr = [{
+        Header: "Name",
+        accessor: "employee.name",
+        Cell: ({cell: {value}}) =>  <EmployeeCell employee={value} />
+    }]
+        daysOfWeek.forEach((weekDay) => {
+                daysArr.push({
+                    Header: moment(weekDay).format('ddd DD/MM'),
+                    accessor: moment(weekDay).format('ddd'),
+                    Cell: ({row}) =>
+                        handleCellComponents(
+                            row.original,
+                            moment(weekDay).format('ddd'),
+                            row.original.employee
+                        )
+                })
+        })
+        return daysArr;
+}
+
+const columsMemo = useMemo(() => {
+    return getColumns(getWeekArray(weekStart, weekEnd));
+    // eslint-disable-next-line
+}, [weekStart, weekEnd]);
 
 useEffect(() => {
-    const daysOfWeek = getWeekArray(weekStart, weekEnd);
-    setTimeout(() => {
-        setColumns(getColumns(daysOfWeek))
-        setData(getData(daysOfWeek));
-    }, 500);
+        setData(getData(getWeekArray(weekStart, weekEnd)));
+    // eslint-disable-next-line
 }, [weekStart, weekEnd])
+
 
 const getData = (daysOfWeek) => {
     const data = daysOfWeek.map((_, index) => {
@@ -102,27 +124,6 @@ const getData = (daysOfWeek) => {
         }
       }
 
-const getColumns = (daysOfWeek) => {
-    let daysArr = [{
-        Header: "Name",
-        accessor: "employee.name",
-        Cell: ({cell: {value}}) =>  <EmployeeCell employee={value} />
-    }]
-    daysOfWeek.forEach((weekDay) => {
-            daysArr.push({
-                Header: moment(weekDay).format('ddd DD/MM'),
-                accessor: moment(weekDay).format('ddd'),
-                Cell: ({row}) =>
-                    handleCellComponents(
-                        row.original,
-                        moment(weekDay).format('ddd'),
-                        row.original.employee
-                    )
-            })
-    })
-    return daysArr;
-}
-
 const handleCellComponents = (shiftData, forDay, employee) => {
     if (!shiftData[forDay].shiftDuration) {
         return <CreateShift
@@ -160,10 +161,9 @@ const handleCellComponents = (shiftData, forDay, employee) => {
                             </Button>
                         </div>
                     </div>
-                        {columns.length > 1 &&  <ScheduleTable columns={columns} data={data}
+                        <ScheduleTable columns={columsMemo} data={data}
                             handleCellComponents={handleCellComponents}/>
-                        }
-                        
+
                         <CreateShiftSidePane
                             choosenShiftDate={choosenShiftDate}
                             employee={employee}

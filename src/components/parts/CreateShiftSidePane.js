@@ -126,47 +126,72 @@ function CreateShiftSidePane({
                         id="candidate-features"
                         className="mb-3">
                         <Tab eventKey="createShift" title="Create Shift">
-                           <div className="create-shift-holder">
-                                <div className="shift-slots">
-                                    <div className="d-flex align-items-center">
-                                        <FiClock  className="me-2"/>
-                                        Start
-                                    </div>
-                                    <Form.Select
-                                        name="shiftStart"
-                                        value={shiftDuration.shiftStart}
-                                        onChange={(e) => updateShift(e)}>
-                                        {shiftStartTimeOptions.map((value, index) => {
-                                            return (
-                                                <option
-                                                    key={index}
-                                                    value={value}
-                                                >
-                                                    {moment(value).format("h:mm A")}
-                                                </option>
-                                            )
-                                        })}
-                                    </Form.Select>
-                                    End
-                                    <Form.Select
-                                    name="shiftEnd"
-                                        value={shiftDuration.shiftEnd}
-                                        onChange={(e) => updateShift(e)}>
-                                        {shiftEndTimeOptions.map((value, index) => {
-                                            return (
-                                                <option
-                                                    key={index * 17}
-                                                    value={value}
-                                                >
-                                                    {moment(value).format("h:mm A")}
-                                                </option>)
-                                        })}
-                                    </Form.Select>
-                                   <strong>
-                                        {workingHours} Hours
-                                   </strong>
-                                </div>
-                           </div>
+                           <Form className="create-shift-holder">
+                               <Row className="pt-5 mb-3">
+                                    <Col className="pe-0" md={5}>
+                                        <Form.Group  className="shift-slots justify-content-between" controlId="shiftStart">
+                                            <Form.Label className="d-flex align-items-center">
+                                                <FiClock  className="me-2"/>
+                                                Start
+                                            </Form.Label>
+                                            <Form.Select
+                                                name="shiftStart"
+                                                value={shiftDuration.shiftStart}
+                                                onChange={(e) => updateShift(e)}>
+                                                {shiftStartTimeOptions.map((value, index) => {
+                                                    return (
+                                                        <option
+                                                            key={index}
+                                                            value={value}
+                                                        >
+                                                            {moment(value).format("h:mm A")}
+                                                        </option>
+                                                    )
+                                                })}
+                                            </Form.Select>
+                                        </Form.Group>
+                                    </Col>
+                                    <Col className="ps-0" md={7}>
+                                        <Form.Group className="shift-slots justify-content-around" controlId="shiftEnd">
+                                            <Form.Label>
+                                                End
+                                            </Form.Label>
+                                            <Form.Select
+                                                name="shiftEnd"
+                                                value={shiftDuration.shiftEnd}
+                                                onChange={(e) => updateShift(e)}>
+                                                {shiftEndTimeOptions.map((value, index) => {
+                                                    return (
+                                                        <option
+                                                            key={index * 17}
+                                                            value={value}
+                                                        >
+                                                            {moment(value).format("h:mm A")}
+                                                        </option>)
+                                                })}
+                                            </Form.Select>
+                                            <strong>
+                                                {workingHours} Hours
+                                            </strong>
+                                        </Form.Group>
+                                    </Col>
+                               </Row>
+
+                               <Form.Group as={Row} className="mb-3 mt-2" controlId="breakLength">
+                                    <Form.Label column sm="2">Break</Form.Label>
+                                    <Col sm="3" className="d-flex align-items-center">
+                                        <Form.Control type="number" value={60} /> <span className="ms-2">min</span>
+                                    </Col>
+                                    <Col sm="7"></Col>
+                                </Form.Group>
+
+                                <Form.Group as={Row} className="mb-3" controlId="exampleForm.ControlTextarea1">
+                                    <Form.Label column sm="2">Note</Form.Label>
+                                    <Col sm="10">
+                                        <Form.Control as="textarea" placeholder="Type here" rows={3} />
+                                    </Col>
+                                </Form.Group>
+                           </Form>
                         </Tab>
                         <Tab eventKey="createTemplate" title="Create Template">
                             Templates

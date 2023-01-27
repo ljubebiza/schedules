@@ -1,11 +1,12 @@
-import React from 'react'
+import React from "react";
 
 function EmployeeCell(props) {
-  return (
-    <div>
-        <span className="employee-name">{props.employee}</span>
-    </div>
-  )
+    console.log(props.weekHoursSum);
+    return (
+        <div>
+            <span className="employee-name">{props.employee.name}</span>
+        </div>
+    );
 }
 
-export default EmployeeCell
+export default EmployeeCell;

@@ -109,4 +109,28 @@ div.slide-pane {
             max-height: 35px;
         }
     }
+    .shift-day {
+        margin: 5px;
+        padding: 0px;
+        width: 38px;
+        height: 38px;
+        border-radius: 50% !important;
+        border: 1px solid  #dee2e6 ;
+        background-color: #fff;
+        font-size: 14px
+    }
+
+    .clicked-shift-day {
+        @extend .shift-day;
+        color:#fff;
+        background-color: #0d6efd;
+    }
+    .repeat-actions {
+        display: flex;
+        align-items: center;
+        input.repeat-input {
+            max-width: 65px;
+        }
+
+    }
 }

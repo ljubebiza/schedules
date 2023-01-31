@@ -1,6 +1,7 @@
 import React from "react";
 import { Row, Col, Form, Button } from "react-bootstrap";
 import { FiClock } from "react-icons/fi";
+import { GiStopwatch } from "react-icons/gi";
 import moment from "moment";
 import { useEffect } from "react";
 
@@ -14,11 +15,14 @@ function ShiftsForm({
     workingHours,
     daysOfweek,
     handleShiftRepetition,
-    setSelectedTab
+    setSelectedTab,
+    shiftStartOvertimeOptions,
+    shiftEndOvertimeOptions
 }) {
     useEffect(() => {
         return () => setSelectedTab("createShift");
     }, []);
+
     return (
         <Form className="create-shift-holder" onSubmit={handleSubmit}>
             {selectedTab === "createTemplate" && (
@@ -79,46 +83,95 @@ function ShiftsForm({
                     </Form.Group>
                 </Col>
             </Row>
+            {selectedTab === "createShift" && (
+                <Row>
+                    <Col className="pe-0" md="5">
+                        <Form.Group
+                            controlId="overtimeStart"
+                            className="shift-slots justify-content-between">
+                            <Form.Label className="d-flex align-items-center" title="Add overtime">
+                                <GiStopwatch className="me-2" />
+                                Start
+                            </Form.Label>
+                            <Form.Select
+                                name="overtimeStart"
+                                value={shift.overtimeStart}
+                                onChange={(e) => updateShift(e)}>
+                                {shiftStartOvertimeOptions?.map((value, index) => {
+                                    return (
+                                        <option key={index * 13} value={value}>
+                                            {moment(value).format("h:mm A")}
+                                        </option>
+                                    );
+                                })}
+                            </Form.Select>
+                        </Form.Group>
+                    </Col>
+                    <Col className="ps-0" md="7">
+                        <Form.Group
+                            controlId="overtimeEnd"
+                            className="shift-slots justify-content-around">
+                            <Form.Label>End</Form.Label>
+                            <Form.Select
+                                name="overtimeEnd"
+                                value={shift.overtimeEnd}
+                                onChange={(e) => updateShift(e)}>
+                                {shiftEndOvertimeOptions?.map((value, index) => {
+                                    return (
+                                        <option key={index * 57} value={value}>
+                                            {moment(value).format("h:mm A")}
+                                        </option>
+                                    );
+                                })}
+                            </Form.Select>
+                            <strong>{workingHours} Hours</strong>
+                        </Form.Group>
+                    </Col>
+                </Row>
+            )}
             <Row>
                 <Col className="mt-4">
                     <hr />
                 </Col>
             </Row>
+            <Row>
+                <Col>
+                    <Form.Group as={Row} className="mb-3 mt-2" controlId="breakLength">
+                        <Form.Label column sm="2">
+                            Break
+                        </Form.Label>
+                        <Col sm="3" className="d-flex align-items-center">
+                            <Form.Control
+                                type="number"
+                                name="break"
+                                value={shift.break}
+                                onChange={(e) => {
+                                    updateShift(e);
+                                }}
+                            />
+                            <span className="ms-2">min</span>
+                        </Col>
+                        <Col sm="7"></Col>
+                    </Form.Group>
 
-            <Form.Group as={Row} className="mb-3 mt-2" controlId="breakLength">
-                <Form.Label column sm="2">
-                    Break
-                </Form.Label>
-                <Col sm="3" className="d-flex align-items-center">
-                    <Form.Control
-                        type="number"
-                        name="break"
-                        value={shift.break}
-                        onChange={(e) => {
-                            updateShift(e);
-                        }}
-                    />
-                    <span className="ms-2">min</span>
+                    <Form.Group as={Row} className="mb-3" controlId="exampleForm.ControlTextarea1">
+                        <Form.Label column sm="2">
+                            Note
+                        </Form.Label>
+                        <Col sm="10">
+                            <Form.Control
+                                as="textarea"
+                                name="note"
+                                placeholder="Type here"
+                                onChange={(e) => {
+                                    updateShift(e);
+                                }}
+                                rows={3}
+                            />
+                        </Col>
+                    </Form.Group>
                 </Col>
-                <Col sm="7"></Col>
-            </Form.Group>
-
-            <Form.Group as={Row} className="mb-3" controlId="exampleForm.ControlTextarea1">
-                <Form.Label column sm="2">
-                    Note
-                </Form.Label>
-                <Col sm="10">
-                    <Form.Control
-                        as="textarea"
-                        name="note"
-                        placeholder="Type here"
-                        onChange={(e) => {
-                            updateShift(e);
-                        }}
-                        rows={3}
-                    />
-                </Col>
-            </Form.Group>
+            </Row>
             <Row>
                 <Col className="mt-4">
                     <hr />

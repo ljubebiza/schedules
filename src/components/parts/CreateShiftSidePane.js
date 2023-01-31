@@ -17,11 +17,13 @@ function CreateShiftSidePane({
 }) {
     const [shiftStartTimeOptions, setShiftStartTimeOptions] = useState([]);
     const [shiftEndTimeOptions, setShiftEndTimeOptions] = useState([]);
+    const [shiftStartOvertimeOptions, setShiftStartOvertimeOptions] = useState([]);
+    const [shiftEndOvertimeOptions, setShiftEndOvertimeOptions] = useState([]);
     const [shift, setShift] = useState({
         shiftStart: moment(choosenShiftDate).hour(9).minute(0).format(),
         shiftEnd: moment(choosenShiftDate).hour(17).minute(0).format(),
-        overTimeStart: "",
-        overTimeEnd: "",
+        overtimeStart: moment(choosenShiftDate).hour(17).minute(30).format(),
+        overtimeEnd: moment(choosenShiftDate).hour(18).minute(0).format(),
         break: 60,
         workingHours: "",
         note: "",
@@ -77,11 +79,15 @@ function CreateShiftSidePane({
     useEffect(() => {
         setShiftStartTimeOptions(getHoursOfADay());
         setShiftEndTimeOptions(getHoursOfADay(setStartHour(shift.shiftStart)));
+        setShiftStartOvertimeOptions(getHoursOfADay());
+        setShiftEndOvertimeOptions(getHoursOfADay());
 
         setShift({
             ...shift,
             shiftStart: moment(choosenShiftDate).hour(9).minute(0).format(),
-            shiftEnd: moment(choosenShiftDate).hour(17).minute(0).format()
+            shiftEnd: moment(choosenShiftDate).hour(17).minute(0).format(),
+            overtimeStart: moment(choosenShiftDate).hour(17).minute(30).format(),
+            overtimeEnd: moment(choosenShiftDate).hour(18).minute(0).format()
         });
         setSelectedTab("createShift");
         setWorkingHours(getWorkingHours("shiftStart", shift.shiftStart));
@@ -204,6 +210,8 @@ function CreateShiftSidePane({
                                         daysOfweek={daysOfweek}
                                         handleShiftRepetition={handleShiftRepetition}
                                         setSelectedTab={setSelectedTab}
+                                        shiftStartOvertimeOptions={shiftStartOvertimeOptions}
+                                        shiftEndOvertimeOptions={shiftEndOvertimeOptions}
                                     />
                                 </Tab>
                                 <Tab eventKey="createTemplate" title="Create Template">

@@ -20,6 +20,7 @@ function App() {
     });
     const [choosenShiftDate, setChoosenShiftDate] = useState(moment());
     const [employee, setEmployee] = useState(null);
+    const [templates, setTemplates] = useState([]);
 
     const getWeekArray = (startOfWeek, endOfWeek) => {
         const days = [];
@@ -33,14 +34,18 @@ function App() {
         return days;
     };
 
-    const getEmployeeWeekHoursSum = (days) => {
-        let hours = "";
+    const getEmployeeWeekHoursAndDaysSum = (days) => {
+        let hoursOfWork = 0;
+        let daysOfWork = 0;
         for (const key in days) {
-            if (key != "employee") {
-                hours += days[key]?.shiftDuration;
+            if (key != "employee" && days[key]?.shiftStart) {
+                daysOfWork++;
+                hoursOfWork += moment
+                    .duration(moment(days[key]?.shiftEnd).diff(moment(days[key]?.shiftStart)))
+                    .asHours();
             }
         }
-        return hours;
+        return { hoursOfWork, daysOfWork };
     };
 
     const getColumns = (daysOfWeek) => {
@@ -51,19 +56,21 @@ function App() {
                 Cell: ({ row }) => (
                     <EmployeeCell
                         employee={row.original.employee}
-                        weekHoursSum={getEmployeeWeekHoursSum(row.original)}
+                        getEmployeeWeekHoursAndDaysSum={getEmployeeWeekHoursAndDaysSum(
+                            row.original
+                        )}
                     />
                 )
             }
         ];
-        daysOfWeek.forEach((weekDay) => {
+        daysOfWeek.forEach((dayOfweek) => {
             daysArr.push({
-                Header: moment(weekDay).format("ddd DD/MM"),
-                accessor: moment(weekDay).format("ddd"),
+                Header: moment(dayOfweek).format("ddd DD/MM"),
+                accessor: moment(dayOfweek).format("ddd"),
                 Cell: ({ row }) =>
                     handleCellComponents(
                         row.original,
-                        moment(weekDay).format("ddd"),
+                        moment(dayOfweek).format("ddd"),
                         row.original.employee
                     )
             });
@@ -73,12 +80,12 @@ function App() {
     const columsMemo = useMemo(() => {
         return getColumns(getWeekArray(weekStart, weekEnd));
         // eslint-disable-next-line
-}, [weekStart, weekEnd]);
+}, [weekStart, weekEnd, templates]);
 
     useEffect(() => {
         setData(getData(getWeekArray(weekStart, weekEnd)));
         // eslint-disable-next-line
-}, [weekStart, weekEnd])
+}, [weekStart, weekEnd, templates])
 
     const getData = (daysOfWeek) => {
         const data = daysOfWeek.map((_, index) => {
@@ -86,7 +93,8 @@ function App() {
             daysOfWeek.forEach((dayOfweek) => {
                 if (Math.floor(Math.random() * 5) % 2) {
                     rowObject[moment(dayOfweek).format("ddd")] = {
-                        shiftDuration: "08am - 16pm",
+                        shiftStart: moment(dayOfweek).hour(9).minute(0).format(),
+                        shiftEnd: moment(dayOfweek).hour(17).minute(0).format(),
                         date: dayOfweek
                     };
                 } else {
@@ -146,7 +154,7 @@ function App() {
     };
 
     const handleCellComponents = (shiftData, forDay, employee) => {
-        if (!shiftData[forDay].shiftDuration) {
+        if (!shiftData[forDay].shiftStart) {
             return (
                 <CreateShift
                     shiftData={shiftData}
@@ -154,12 +162,13 @@ function App() {
                     setEmployee={setEmployee}
                     setIsCreateShiftSidePaneOpen={setIsCreateShiftSidePaneOpen}
                     setChoosenShiftDate={setChoosenShiftDate}
+                    templates={templates}
                 />
             );
         }
         return <Shift shiftData={shiftData} forDay={forDay} employee={employee} />;
     };
-    console.log(data);
+
     return (
         <div className="container mt-5">
             <h1 className="text-center text-info">Schedule Table</h1>
@@ -192,8 +201,9 @@ function App() {
                         data={data}
                         handleCellComponents={handleCellComponents}
                     />
-
                     <CreateShiftSidePane
+                        templates={templates}
+                        setTemplates={setTemplates}
                         daysOfweek={getWeekArray(weekStart, weekEnd)}
                         choosenShiftDate={choosenShiftDate}
                         employee={employee}

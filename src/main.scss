@@ -43,6 +43,7 @@ table {
                         display: block;
                     }
                 }
+
                 .hide-actions{
                     display: none;
                     .create-icons {
@@ -58,9 +59,15 @@ table {
                             transform: scale(1.1);
                         }
                     }
+
+                    
                 }
            }
            .employee-name {
+                font-size: 14px;
+                color: gray;
+           }
+           .emlpoyee-shifts-sum {
                 font-size: 12px;
                 color: gray;
            }
@@ -92,6 +99,19 @@ table {
             --bs-btn-active-bg: #fff;
         }
     }
+}
+
+.template-shift {
+    min-width: 155px;
+    border: 3px solid gray;
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 2px 4px;
+    margin-bottom: 3px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
 }
 
 div.slide-pane {

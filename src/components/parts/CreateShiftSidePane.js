@@ -1,11 +1,20 @@
 import moment from "moment";
 import React, { useState, useEffect } from "react";
-import { Col, Container, Row, Tabs, Tab, Form, Button } from "react-bootstrap";
-import { FiArrowRight, FiClock } from "react-icons/fi";
+import { Col, Container, Row, Tabs, Tab } from "react-bootstrap";
+import { FiArrowRight } from "react-icons/fi";
 import SlidingPane from "react-sliding-pane";
 import "react-sliding-pane/dist/react-sliding-pane.css";
+import ShiftsForm from "./ShiftsForm";
 
-function CreateShiftSidePane({ choosenShiftDate, employee, visible, closePane, daysOfweek }) {
+function CreateShiftSidePane({
+    choosenShiftDate,
+    employee,
+    visible,
+    closePane,
+    daysOfweek,
+    templates,
+    setTemplates
+}) {
     const [shiftStartTimeOptions, setShiftStartTimeOptions] = useState([]);
     const [shiftEndTimeOptions, setShiftEndTimeOptions] = useState([]);
     const [shift, setShift] = useState({
@@ -23,7 +32,7 @@ function CreateShiftSidePane({ choosenShiftDate, employee, visible, closePane, d
         isHoliday: ""
     });
     const [workingHours, setWorkingHours] = useState("");
-
+    const [selectedTab, setSelectedTab] = useState("");
     const getHoursOfADay = (startTime = null) => {
         return Array.from({ length: 24 }, (_, i) => i).reduce((r, hour) => {
             if (startTime) {
@@ -74,6 +83,7 @@ function CreateShiftSidePane({ choosenShiftDate, employee, visible, closePane, d
             shiftStart: moment(choosenShiftDate).hour(9).minute(0).format(),
             shiftEnd: moment(choosenShiftDate).hour(17).minute(0).format()
         });
+        setSelectedTab("createShift");
         setWorkingHours(getWorkingHours("shiftStart", shift.shiftStart));
         // eslint-disable-next-line
       }, [choosenShiftDate])
@@ -133,6 +143,13 @@ function CreateShiftSidePane({ choosenShiftDate, employee, visible, closePane, d
     };
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (selectedTab === "createTemplate") {
+            createTmeplate();
+        }
+    };
+
+    const createTmeplate = () => {
+        setTemplates([...templates, shift]);
     };
 
     return (
@@ -151,10 +168,18 @@ function CreateShiftSidePane({ choosenShiftDate, employee, visible, closePane, d
                         </Col>
                         <Col xl={10}>
                             <div className="d-flex justify-content-around w-100">
-                                <span>
-                                    {choosenShiftDate ? moment(choosenShiftDate).format("ll") : ""}
-                                </span>
-                                <span>{employee?.name}</span>
+                                {selectedTab === "createShift" ? (
+                                    <>
+                                        <span>
+                                            {choosenShiftDate
+                                                ? moment(choosenShiftDate).format("ll")
+                                                : ""}
+                                        </span>
+                                        <span>{employee?.name}</span>{" "}
+                                    </>
+                                ) : (
+                                    <span>Crete Template</span>
+                                )}
                             </div>
                         </Col>
                     </Row>
@@ -163,196 +188,38 @@ function CreateShiftSidePane({ choosenShiftDate, employee, visible, closePane, d
                             <Tabs
                                 defaultActiveKey="createShift"
                                 id="candidate-features"
+                                onSelect={(tabKey) => {
+                                    setSelectedTab(tabKey);
+                                }}
                                 className="mb-3">
                                 <Tab eventKey="createShift" title="Create Shift">
-                                    <Form className="create-shift-holder" onSubmit={handleSubmit}>
-                                        <Row className="pt-5 mb-3">
-                                            <Col className="pe-0" md={5}>
-                                                <Form.Group
-                                                    className="shift-slots justify-content-between"
-                                                    controlId="shiftStart">
-                                                    <Form.Label className="d-flex align-items-center">
-                                                        <FiClock className="me-2" />
-                                                        Start
-                                                    </Form.Label>
-                                                    <Form.Select
-                                                        name="shiftStart"
-                                                        value={shift.shiftStart}
-                                                        onChange={(e) => updateShift(e)}>
-                                                        {shiftStartTimeOptions.map(
-                                                            (value, index) => {
-                                                                return (
-                                                                    <option
-                                                                        key={index}
-                                                                        value={value}>
-                                                                        {moment(value).format(
-                                                                            "h:mm A"
-                                                                        )}
-                                                                    </option>
-                                                                );
-                                                            }
-                                                        )}
-                                                    </Form.Select>
-                                                </Form.Group>
-                                            </Col>
-                                            <Col className="ps-0" md={7}>
-                                                <Form.Group
-                                                    className="shift-slots justify-content-around"
-                                                    controlId="shiftEnd">
-                                                    <Form.Label>End</Form.Label>
-                                                    <Form.Select
-                                                        name="shiftEnd"
-                                                        value={shift.shiftEnd}
-                                                        onChange={(e) => updateShift(e)}>
-                                                        {shiftEndTimeOptions.map((value, index) => {
-                                                            return (
-                                                                <option
-                                                                    key={index * 17}
-                                                                    value={value}>
-                                                                    {moment(value).format("h:mm A")}
-                                                                </option>
-                                                            );
-                                                        })}
-                                                    </Form.Select>
-                                                    <strong>{workingHours} Hours</strong>
-                                                </Form.Group>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col className="mt-4">
-                                                <hr />
-                                            </Col>
-                                        </Row>
-
-                                        <Form.Group
-                                            as={Row}
-                                            className="mb-3 mt-2"
-                                            controlId="breakLength">
-                                            <Form.Label column sm="2">
-                                                Break
-                                            </Form.Label>
-                                            <Col sm="3" className="d-flex align-items-center">
-                                                <Form.Control
-                                                    type="number"
-                                                    name="break"
-                                                    value={shift.break}
-                                                    onChange={(e) => {
-                                                        updateShift(e);
-                                                    }}
-                                                />
-                                                <span className="ms-2">min</span>
-                                            </Col>
-                                            <Col sm="7"></Col>
-                                        </Form.Group>
-
-                                        <Form.Group
-                                            as={Row}
-                                            className="mb-3"
-                                            controlId="exampleForm.ControlTextarea1">
-                                            <Form.Label column sm="2">
-                                                Note
-                                            </Form.Label>
-                                            <Col sm="10">
-                                                <Form.Control
-                                                    as="textarea"
-                                                    name="note"
-                                                    placeholder="Type here"
-                                                    onChange={(e) => {
-                                                        updateShift(e);
-                                                    }}
-                                                    rows={3}
-                                                />
-                                            </Col>
-                                        </Form.Group>
-                                        <Row>
-                                            <Col className="mt-4">
-                                                <hr />
-                                            </Col>
-                                        </Row>
-                                        <Row className="mt-2 py-3 px-2">
-                                            <Col className="border">
-                                                <Row className="border-bottom p-2">
-                                                    <Col sm="3 d-flex align-items-center">
-                                                        Applay on
-                                                    </Col>
-                                                    <Col sm="9">
-                                                        <div
-                                                            className="btn-group"
-                                                            role="group"
-                                                            aria-label="Days">
-                                                            {daysOfweek.map((day, index) => {
-                                                                return (
-                                                                    <button
-                                                                        id={moment(day).format(
-                                                                            "ddd"
-                                                                        )}
-                                                                        key={index}
-                                                                        type="button"
-                                                                        className={
-                                                                            shift.applayOnDays.includes(
-                                                                                moment(day).format(
-                                                                                    "ddd"
-                                                                                )
-                                                                            )
-                                                                                ? "clicked-shift-day"
-                                                                                : "shift-day"
-                                                                        }
-                                                                        onClick={(e) => {
-                                                                            handleShiftRepetition(
-                                                                                e
-                                                                            );
-                                                                        }}>
-                                                                        {moment(day).format("ddd")}
-                                                                    </button>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    </Col>
-                                                </Row>
-                                                <Row className="py-3 px-2">
-                                                    <Form.Group
-                                                        className="repeat-actions"
-                                                        as={Col}
-                                                        controlId="repeatPeriod">
-                                                        <Form.Label>Repeat</Form.Label>
-                                                        <Form.Select
-                                                            className="ms-5"
-                                                            name="repeatPeriod"
-                                                            value={shift.repeatPeriod}
-                                                            onChange={(e) => updateShift(e)}>
-                                                            <option value={"weeks"}>Weeks</option>
-                                                            <option value={"months"}>Months</option>
-                                                        </Form.Select>
-                                                    </Form.Group>
-
-                                                    <Form.Group
-                                                        className="repeat-actions"
-                                                        as={Col}
-                                                        controlId="repeat">
-                                                        <Form.Control
-                                                            className="repeat-input"
-                                                            type="number"
-                                                            name="repeat"
-                                                            value={shift.repeat}
-                                                            onChange={(e) => updateShift(e)}
-                                                        />
-                                                    </Form.Group>
-                                                </Row>
-                                            </Col>
-                                        </Row>
-                                        <Row>
-                                            <Col>
-                                                <Button
-                                                    type="submit"
-                                                    className="position-absolute bottom-0 mb-5">
-                                                    Create Shift
-                                                </Button>
-                                            </Col>
-                                        </Row>
-                                    </Form>
+                                    <ShiftsForm
+                                        selectedTab={selectedTab}
+                                        handleSubmit={handleSubmit}
+                                        shift={shift}
+                                        updateShift={updateShift}
+                                        shiftEndTimeOptions={shiftEndTimeOptions}
+                                        shiftStartTimeOptions={shiftStartTimeOptions}
+                                        workingHours={workingHours}
+                                        daysOfweek={daysOfweek}
+                                        handleShiftRepetition={handleShiftRepetition}
+                                        setSelectedTab={setSelectedTab}
+                                    />
                                 </Tab>
                                 <Tab eventKey="createTemplate" title="Create Template">
-                                    Templates
+                                    <ShiftsForm
+                                        selectedTab={selectedTab}
+                                        handleSubmit={handleSubmit}
+                                        shift={shift}
+                                        updateShift={updateShift}
+                                        shiftEndTimeOptions={shiftEndTimeOptions}
+                                        shiftStartTimeOptions={shiftStartTimeOptions}
+                                        workingHours={workingHours}
+                                        daysOfweek={daysOfweek}
+                                        handleShiftRepetition={handleShiftRepetition}
+                                        setSelectedTab={setSelectedTab}
+                                        createTmeplate={createTmeplate}
+                                    />
                                 </Tab>
                             </Tabs>
                         </Col>
